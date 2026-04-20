@@ -88,6 +88,56 @@ function reserveSeat(matrix: SeatingMatrix, inputRow: number, inputCol: number):
 }
 
 /**
+ * Validates if a seat can be unreserved by checking bounds and occupancy.
+ * A seat can be unreserved only when it is currently occupied.
+ */
+function validateSeatUnreservation(
+  matrix: SeatingMatrix,
+  inputRow: number,
+  inputCol: number,
+): { success: boolean; message: string } {
+  const row = inputRow - 1;
+  const col = inputCol - 1;
+
+  if (row < 0 || row >= matrix.length || col < 0 || col >= matrix[0].length) {
+    return {
+      success: false,
+      message: `Unreservation failed: seat R${inputRow}, C${inputCol} is out of range.`,
+    };
+  }
+
+  if (matrix[row][col] === 0) {
+    return {
+      success: false,
+      message: `Unreservation failed: seat R${inputRow}, C${inputCol} is already available.`,
+    };
+  }
+
+  return {
+    success: true,
+    message: `Seat R${inputRow}, C${inputCol} is occupied and can be unreserved.`,
+  };
+}
+
+/**
+ * Unreserves a seat if validation succeeds by changing 1 to 0.
+ * Returns a message indicating unreservation success or failure.
+ */
+function unreserveSeat(matrix: SeatingMatrix, inputRow: number, inputCol: number): string {
+  const validation = validateSeatUnreservation(matrix, inputRow, inputCol);
+
+  if (!validation.success) {
+    return validation.message;
+  }
+
+  const row = inputRow - 1;
+  const col = inputCol - 1;
+  matrix[row][col] = 0;
+
+  return `Unreservation confirmed: seat R${inputRow}, C${inputCol} is now available.`;
+}
+
+/**
  * Counts occupied and available seats across the entire matrix.
  */
 function countSeatAvailability(matrix: SeatingMatrix): { occupied: number; available: number } {
@@ -237,7 +287,13 @@ function main(): void {
   ]);
 }
 
-if (typeof document === "undefined") {
+const maybeNodeProcess = (globalThis as { process?: { argv?: string[] } }).process;
+const mainEntryPath = maybeNodeProcess?.argv?.[1];
+const isDirectMainExecution =
+  typeof mainEntryPath === "string" &&
+  (mainEntryPath.endsWith("/src/main.ts") || mainEntryPath.endsWith("\\src\\main.ts"));
+
+if (typeof document === "undefined" && isDirectMainExecution) {
   main();
 }
 
@@ -248,6 +304,8 @@ export {
   displaySeatingMatrix,
   validateSeatReservation,
   reserveSeat,
+  validateSeatUnreservation,
+  unreserveSeat,
   countSeatAvailability,
   findFirstAdjacentAvailableSeats,
   occupySeats,
