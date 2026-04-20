@@ -7,9 +7,12 @@
   "scripts": {
     "start": "vite",
     "dev": "vite",
+    "menu": "tsx src/cli.ts menu",
     "console": "tsx src/main.ts",
     "seat-map": "tsx src/cli.ts seat-map",
+    "count-seats": "tsx src/cli.ts count-seats",
     "check-seats": "tsx src/cli.ts check-seats",
+    "find-adjacent": "tsx src/cli.ts find-adjacent",
     "check-seat": "tsx src/cli.ts check-seat",
     "reserve": "tsx src/cli.ts reserve",
     "unreserve": "tsx src/cli.ts unreserve",
